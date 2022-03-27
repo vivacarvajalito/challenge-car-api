@@ -15,12 +15,17 @@
   },
   "dependencies": {
     "dotenv": "^16.0.0",
-    "tslib": "^2.3.1"
+    "express": "^4.17.3",
+    "module-alias": "^2.2.2",
+    "tslib": "^2.3.1",
+    "winston": "^3.6.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.0.2",
     "@commitlint/config-conventional": "^16.0.0",
+    "@types/express": "^4.17.13",
     "@types/jest": "^27.4.0",
+    "@types/module-alias": "^2.0.1",
     "@types/node": "^17.0.8",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",

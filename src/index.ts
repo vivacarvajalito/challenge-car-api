@@ -1,20 +1,39 @@
-#!/usr/bin/env node
+import * as moduleAlias from 'module-alias';
+const sourcePath = process.env.NODE_ENV === 'development' ? 'src' : 'dist';
+moduleAlias.addAliases({
+  '@server': sourcePath,
+  '@config': `${sourcePath}/config`,
+  '@controller': `${sourcePath}/controller`,
+  '@middleware': `${sourcePath}/middleware`,
+});
 
-/**
- * This is a sample HTTP server.
- * Replace this with your implementation.
- */
+import { createServer } from './config/express';
+import { AddressInfo } from 'net';
+import http from 'http';
+import { logger } from './config/logger';
 
-import 'dotenv/config'
-import { createServer, IncomingMessage, ServerResponse } from 'http'
+const host = process.env.HOST || '0.0.0.0';
+const port = process.env.PORT || '8080  ';
 
-const Port = parseInt(process.env.PORT || '8080')
+async function startServer() {
+  const app = createServer();
+  const server = http.createServer(app).listen({ host, port }, () => {
+    const addressInfo = server.address() as AddressInfo;
+    logger.info(
+      `Server ready at http://${addressInfo.address}:${addressInfo.port}`,
+    );
+  });
 
-const requestListener = (request: IncomingMessage, response: ServerResponse) => {
-  response.writeHead(200)
-  response.end('Hello, World!')
+  const signalTraps: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
+  signalTraps.forEach((type) => {
+    process.once(type, async () => {
+      logger.info(`process.once ${type}`);
+
+      server.close(() => {
+        logger.debug('HTTP server closed');
+      });
+    });
+  });
 }
 
-const server = createServer(requestListener)
-
-server.listen(Port)
+startServer();

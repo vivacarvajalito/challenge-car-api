@@ -1,21 +1,19 @@
-/**
- * This is a sample test suite.
- * Replace this with your implementation.
- */
+process.env.PORT = '3001';
+import express from 'express';
+import { Server } from 'net';
 
-import { spawn } from 'child_process'
-import Path from 'path'
-
-describe('Example Test', function () {
-  it('should init without errors', async function () {
-    process.env.PORT = '0'
-
-    const index = Path.resolve(__dirname, 'index.ts')
-    const tsNodeExe = process.platform === 'win32' ? './node_modules/.bin/ts-node.cmd' : './node_modules/.bin/ts-node'
-    const proc = await spawn(tsNodeExe, [index])
-
-    expect(proc.pid).toBeDefined()
-
-    process.kill(proc.pid || 0, 'SIGTERM')
-  })
-})
+describe('Index', () => {
+  it('Config express should work', async () => {
+    const listen = jest.spyOn(Server.prototype, 'listen');
+    jest.mock('./config/express', () => ({
+      createServer: jest.fn().mockReturnValue(express()),
+    }));
+    await import('./index');
+    expect(listen).toBeCalled();
+    const server = listen.mock.results[0].value as Server;
+    setImmediate(() => {
+      server.close();
+    });
+    listen.mockRestore();
+  });
+});

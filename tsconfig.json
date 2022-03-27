@@ -32,6 +32,12 @@
     "rootDir": "src",
     "baseUrl": "."
   },
+  "paths": {
+    "@server/*": ["src/*"],
+    "@config/*": ["src/config/*"],
+    "@middleware/*": ["src/middleware/*"],
+    "@controller/*": ["src/controller/*"],
+  },
   "exclude": [
     "dist",
     "node_modules"
